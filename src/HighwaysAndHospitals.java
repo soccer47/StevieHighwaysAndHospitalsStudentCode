@@ -67,35 +67,56 @@ public class HighwaysAndHospitals {
                 // City number of city currently being checked initialized to i
                 int current = i;
 
+                for (int j = 0; j < connections[current].size(); j++) {
+                    toVisit.add(connections[current].get(j));
+                }
+
                 // While a city with a hospital hasn't been found, continue looping
                 while (validCity == 0) {
                     // If there aren't any more cities to visit in the queue, build a hospital at
                     // the current city (there aren't any already-created hospitals to connect to)
                     if (toVisit.peek() == null) {
-                        return -1;
+                        validCity = -1;
+                        cost += hospitalCost;
+                        break;
                     }
 
                     // Current square is the next value in the toVisit queue
                     current = toVisit.remove();
 
-                    // If city has a hospital, set validCity to the city's number and break
+                    // If the city has a hospital ...
                     if (hospitals[current] == true) {
+                        // Set validCity to the current city
                         validCity = current;
+
+                        // Find the number of roads taken to get to the city with the hospital by going through the
+                        // city path taken from the original city
+                        int thisCity = validCity;
+                        // While the city being checked isn't the original city, continue looping
+                        while (thisCity != i) {
+                            // If there isn't a highway between the current city and previous city,
+                            // create a highway between the two cities and add it to the cost
+                            if (!roads[thisCity].contains(lastCity[thisCity])) {
+                                roads[thisCity].add(lastCity[thisCity]);
+                                cost += highwayCost;
+                            }
+                            thisCity = lastCity[thisCity];
+                        }
                         break;
                     }
 
                     // Add the next possible cities to the toVisit queue (if they aren't already visited)
-                    for (city : connections[current]) {
+                    for (int city : connections[current]) {
                         // Makes sure that the given city hasn't been visited yet
                         if (lastCity[city] == 0) {
                             // Add the result square to the toVisit queue
-                            toVisit.add(resultSq);
+                            toVisit.add(city);
                             // Set the previous city of the next city equal to the current city
                             lastCity[city] = current;
                         }
                     }
-
                 }
+
             }
         }
 
@@ -103,7 +124,4 @@ public class HighwaysAndHospitals {
         return 0;
     }
 
-
-    // Method that finds closest city (city fewest connections apart) with a hospital
-    public static int connectedHospitals(int city, boolean[] hospitals)
 }

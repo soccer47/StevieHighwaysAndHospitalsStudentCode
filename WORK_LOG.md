@@ -1,9 +1,9 @@
-Name: YOUR NAME HERE
+Name: Stevie Halprin
 
-| Date    |  Time  |                                     Update |
-|:--------|:------:|-------------------------------------------:|
-| April 5 | 9-10pm | I tried to write abstract, efficient code. |
-|         |        |                                            |
+| Date  |  Time  |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          Update |
+|:------|:------:|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------:|
+| Sep 9 | 9-10pm |     First, I know that if the cost of a hospital isn't greater than the cost of a highway, you can just return the cost of building a hospital in every city. I will store both any possible connections to other nodes and all constructed highways in arrays of integer ArrayLists. I have also realized that I can solve for the minimum cost via a for loop, by adding hospitals to every isolated city (no possible connections), building highways if any connected cities have hospitals, and otherwise building a hospital at the node. |
+|       |        |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
 
 
 To add a new row to the table, click into a cell and then hit shift-enter.

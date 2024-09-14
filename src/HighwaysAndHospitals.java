@@ -27,76 +27,79 @@ public class HighwaysAndHospitals {
         }
 
         // Minimum cost to be returned
-        long cost = 0;
+        long cost;
 
-        // Array of Arraylists to keep track of what other cities each city can have a highway to
-        // Each city's possible connections to be listed at connections[city]
-        ArrayList<Integer>[] connections = new ArrayList[n + 1];
+        // Array to keep track of root city of city at cityCluster[city]
+        int[] rootCity = new int[n + 1];
 
-        // Array to keep track of whether city has been assigned a cluster at cityCluster[city]
-        boolean[] assigned = new boolean[n + 1];
 
-        // Arraylist of integers to keep track of number of clusters, how many cities are in each cluster
-        ArrayList<Integer> clusters = new ArrayList<>();
-
-        // Initialize all ArrayLists in connections array
-        for (int i = 1; i <= n; i++) {
-            connections[i] = new ArrayList<>();
-        }
-
-        // For each possible city connection listed in cities[][], add the 2nd node listed at the index
-        // to the list of possible connections at connections[1st city], and vice versa
+        // Loop through every city, add its root city to rootCity[city]
         for (int i = 0; i < cities.length; i++) {
-            connections[cities[i][0]].add(cities[i][1]);
-            connections[cities[i][1]].add(cities[i][0]);
-        }
+            // Ints to hold 1st and 2nd listed nodes respectively
+            int leafCity = cities[i][1];
+            int ogCity = cities[i][0];
 
-        // Loop through every city, add it to any preexisting cluster it can be a part of, make a new one if none exist
-        for (int i = 1; i <= n; i++) {
-            // If the current city has already been assigned a cluster, skip to the next city
-            if (assigned[i] == false) {
-                // Int to hold number of cities in cluster
-                int numCities = 1;
-                // Set the cluster status of the city to true
-                assigned[i] = true;
-                // Queue to hold cities to be added to cluster
-                Queue<Integer> toAdd = new LinkedList<>();
-                // Add immediate connections of current city to the Queue
-                for (int city : connections[i]) {
-                    toAdd.add(city);
-                    // Set the cluster status of the city to true
-                    assigned[city] = true;
+            // Int to hold root of first listed node in city
+            int parent1 = ogCity;
+            // Int to hold root of second node listed in city
+            int parent2 = leafCity;
+            // Iterate through to find root of first node
+            while (rootCity[parent1] != 0) {
+                parent1 = rootCity[parent1];
+            }
+            // Iterate through to find root of second node
+            while (rootCity[parent2] != 0) {
+                parent2 = rootCity[parent2];
+            }
+
+            int x = ogCity;
+            int y = leafCity;
+            // Int to temporarily hold values
+            int t;
+
+            // Sets parent node of all nodes in path from first listed node to root to the root
+            // Compresses tree
+            while (rootCity[x] > 0) {
+                t = x;
+                x = rootCity[x];
+                rootCity[t] = parent1;
+            }
+
+            // Sets parent node of all nodes in path from second listed node to root to the root
+            // Compresses tree
+            while (rootCity[y] > 0) {
+                t = y;
+                y = rootCity[y];
+                rootCity[t] = parent2;
+            }
+
+            // If nodes don't share the same root, make the parent of second node the first node
+            if (parent1 != parent2) {
+                // If second listed node currently has no parent city, make first node the parent city
+                if (rootCity[leafCity] == 0) {
+                    rootCity[leafCity] = ogCity;
                 }
-                // While there are more cities to be added to the cluster, continue looping
-                while (!toAdd.isEmpty()) {
-                    // Current city is next item in Queue
-                    int current = toAdd.remove();
-                    // Increment the number of cities in the cluster by 1
-                    numCities++;
-                    // Add the connections of the given city to the Queue if they haven't already been added
-                    for (int city : connections[current]) {
-                        if (assigned[city] == false) {
-                            toAdd.add(city);
-                            // Set the cluster status of the city to true
-                            assigned[city] = true;
-                        }
-                    }
+                // Otherwise make the first listed node the parent of the root of second listed node
+                else {
+                    rootCity[rootCity[leafCity]] = ogCity;
                 }
-                // Add another cluster to clusters ArrayList
-                clusters.add(numCities);
+
             }
         }
 
-        // Add the cost of 1 hospital for each cluster to the total cost
-        cost = (long)clusters.size() * hospitalCost;
-        // For each cluster, add the cost of the highways needed to connect the cluster
-        // Highway cost for each cluster is (# cities in cluster - 1) * highwayCost
-        for (int numCities : clusters) {
-            cost += (long)(numCities - 1) * highwayCost;
+        // Int to hold number of clusters
+        int numClusters = 0;
+        // Loop through the root of every city, increment numClusters by 1 for every city that doesn't have a root
+        for (int i = 1; i <= n; i++) {
+            if (rootCity[i] == 0) {
+                numClusters++;
+            }
         }
+
+        // Add the cost of 1 hospital for each cluster to the total cost, + total cost of roads
+        cost = (long)numClusters * hospitalCost + (long)(n - numClusters) * highwayCost;
 
         // Return the minimum cost of the constructed roads and hospitals
         return cost;
     }
-
 }

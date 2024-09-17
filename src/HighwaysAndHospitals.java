@@ -31,18 +31,20 @@ public class HighwaysAndHospitals {
 
         // Array to keep track of root city of city at cityCluster[city]
         int[] rootCity = new int[n + 1];
+        // Array to keep track of number of kids each node has
+        int[] numKids = new int[n + 1];
 
 
         // Loop through every city, add its root city to rootCity[city]
         for (int i = 0; i < cities.length; i++) {
             // Ints to hold 1st and 2nd listed nodes respectively
-            int leafCity = cities[i][1];
-            int ogCity = cities[i][0];
+            int city1 = cities[i][0];
+            int city2 = cities[i][1];
 
             // Int to hold root of first listed node in city
-            int parent1 = ogCity;
+            int parent1 = city1;
             // Int to hold root of second node listed in city
-            int parent2 = leafCity;
+            int parent2 = city2;
             // Iterate through to find root of first node
             while (rootCity[parent1] != 0) {
                 parent1 = rootCity[parent1];
@@ -52,8 +54,8 @@ public class HighwaysAndHospitals {
                 parent2 = rootCity[parent2];
             }
 
-            int x = ogCity;
-            int y = leafCity;
+            int x = city1;
+            int y = city2;
             // Int to temporarily hold values
             int t;
 
@@ -73,15 +75,33 @@ public class HighwaysAndHospitals {
                 rootCity[t] = parent2;
             }
 
-            // If nodes don't share the same root, make the parent of second node the first node
+            // If nodes don't share the same root, make the parent of node with less kids the other node
             if (parent1 != parent2) {
-                // If second listed node currently has no parent city, make first node the parent city
-                if (rootCity[leafCity] == 0) {
-                    rootCity[leafCity] = ogCity;
+                // Ints to hold city with more children and fewer children respectively
+                int biggerCity = 0;
+                int smallerCity = 0;
+
+                // Set biggerCity to the node with more kids, and set smallerCity to the node with fewer kids
+                if (numKids[city1] > numKids[city2]) {
+                    biggerCity = city1;
+                    smallerCity = city2;
                 }
-                // Otherwise make the first listed node the parent of the root of second listed node
                 else {
-                    rootCity[rootCity[leafCity]] = ogCity;
+                    biggerCity = city2;
+                    smallerCity = city1;
+                }
+
+                // If the node with fewer kids currently has no parent city, make first node the parent city
+                if (rootCity[smallerCity] == 0) {
+                    rootCity[smallerCity] = biggerCity;
+                    // Add the number of kids of the new child city + 1 to the number of kids of the bigger city
+                    numKids[biggerCity] = numKids[biggerCity] + 1 + numKids[smallerCity];
+                }
+                // Otherwise make the node with more kids the parent of the root of node with fewer kids
+                else {
+                    rootCity[rootCity[smallerCity]] = biggerCity;
+                    // Add the number of kids of the new child city + 1 to the number of kids of the bigger city
+                    numKids[biggerCity] = numKids[biggerCity] + 1 + numKids[rootCity[smallerCity]];
                 }
 
             }

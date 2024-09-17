@@ -92,6 +92,7 @@ public class HighwaysAndHospitals {
                 }
 
                 // If the node with fewer kids currently has no parent city, make first node the parent city
+                // Weight ordering
                 if (rootCity[smallerCity] == 0) {
                     rootCity[smallerCity] = biggerCity;
                     // Add the number of kids of the new child city + 1 to the number of kids of the bigger city

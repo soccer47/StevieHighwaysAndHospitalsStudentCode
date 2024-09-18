@@ -61,17 +61,25 @@ public class HighwaysAndHospitals {
 
             // Sets parent node of all nodes in path from first listed node to root to the root
             // Compresses tree
-            while (rootCity[x] > 0) {
+            while (rootCity[rootCity[x]] > 0) {
                 t = x;
+                // Sets x to the parent node
                 x = rootCity[x];
+                // Subtracts the kids of the kid node from the parent, as well as the kid node
+                numKids[x] = numKids[x] - numKids[t] - 1;
+                // Sets the parent of the child node to the root
                 rootCity[t] = parent1;
             }
 
             // Sets parent node of all nodes in path from second listed node to root to the root
             // Compresses tree
-            while (rootCity[y] > 0) {
+            while (rootCity[rootCity[y]] > 0) {
                 t = y;
+                // Sets y to the parent node
                 y = rootCity[y];
+                // Subtracts the kids of the kid node from the parent, as well as the kid node
+                numKids[y] = numKids[y] - numKids[t] - 1;
+                // Sets the parent of the child node to the root
                 rootCity[t] = parent2;
             }
 
@@ -81,30 +89,24 @@ public class HighwaysAndHospitals {
                 int biggerCity = 0;
                 int smallerCity = 0;
 
-                // Set biggerCity to the node with more kids, and set smallerCity to the node with fewer kids
-                if (numKids[city1] > numKids[city2]) {
-                    biggerCity = city1;
-                    smallerCity = city2;
+                // Set biggerCity to the root of the component with more kids, and set smallerCity to the root of the
+                // component with fewer kids
+                if (numKids[parent1] > numKids[parent2]) {
+                    biggerCity = parent1;
+                    smallerCity = parent2;
                 }
                 else {
-                    biggerCity = city2;
-                    smallerCity = city1;
+                    biggerCity = parent2;
+                    smallerCity = parent1;
                 }
 
-                // If the node with fewer kids currently has no parent city, make first node the parent city
+                // Make root of the component with more kids the root of the component with less kids
                 // Weight ordering
                 if (rootCity[smallerCity] == 0) {
                     rootCity[smallerCity] = biggerCity;
                     // Add the number of kids of the new child city + 1 to the number of kids of the bigger city
                     numKids[biggerCity] = numKids[biggerCity] + 1 + numKids[smallerCity];
                 }
-                // Otherwise make the node with more kids the parent of the root of node with fewer kids
-                else {
-                    rootCity[rootCity[smallerCity]] = biggerCity;
-                    // Add the number of kids of the new child city + 1 to the number of kids of the bigger city
-                    numKids[biggerCity] = numKids[biggerCity] + 1 + numKids[rootCity[smallerCity]];
-                }
-
             }
         }
 
